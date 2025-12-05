@@ -37,4 +37,9 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
-
+Rayfield:Notify({
+   Title = "Possessor Hub👹",
+   Content = "By SlackzSZN👾",
+   Duration = 5,
+   Image = nil,
+})
