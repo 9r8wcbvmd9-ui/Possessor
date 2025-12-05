@@ -47,7 +47,7 @@ Rayfield:Notify({
 local MainTab = Window:CreateTab("🏠Home", nil) -- Title, Image
 local MainSection = MainTab:CreateSection("Main🧟")
 
-local Button = Tab:CreateButton({
+local Button = MainTab:CreateButton({
    Name = "Possessor ESP",
    Callback = function()
    -- The function that takes place when the button is pressed
