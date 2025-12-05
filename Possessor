@@ -38,8 +38,12 @@ local Window = Rayfield:CreateWindow({
 })
 
 Rayfield:Notify({
-   Title = "Possessor Hub👹",
-   Content = "By SlackzSZN👾",
+   Title = "Possessor Hub",
+   Content = "By SlackzSZN",
    Duration = 5,
    Image = nil,
 })
+
+local MainTab = Window:CreateTab("🏠Home", nil) -- Title, Image
+local MainSection = MainTab:CreateSection("Main🧟")
+
