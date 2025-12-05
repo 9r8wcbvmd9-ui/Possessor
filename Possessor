@@ -1,1 +1,1 @@
-bxb b. x
+loadstring(game:HttpGet("Paste here"))()
