@@ -46,3 +46,263 @@ Rayfield:Notify({
 
 local MainTab = Window:CreateTab("🏠Home", nil) -- Title, Image
 local MainSection = MainTab:CreateSection("Main🧟")
+
+
+
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+    local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+    local PossessorESP = loadstring(game:HttpGet("https://paste.ee/r/lwGJs"))()
+    local LocalPlayer = game.Players.LocalPlayer
+    local Players = game:GetService("Players")
+
+    local Window = OrionLib:MakeWindow({
+        Name = "Possessor MultiHack",
+        HidePremium = false,
+        SaveConfig = true,
+        ConfigFolder = "OrionTest",
+        IntroEnabled = true,
+        IntroText = "Welcome to Possessor Multi Hack!",
+        IntroIcon = "rbxassetid://4483345998",
+        Icon = "rbxassetid://4483345998",
+        CloseCallback = function()
+            print("Window closed")
+        end
+    })
+
+    local Tab = Window:MakeTab({
+        Name = "Main",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+
+    local ESPTab = Window:MakeTab({
+        Name = "ESP",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+
+    -- Custom Settings
+    local Settings = {
+        ignoreFriends = true,
+        HuntExploit = true,
+        ExoExploit = true,
+        AntiAFK = true,
+        ESP = {
+            Possessor = true,
+            Medium = true,
+            Decoy = true,
+            Color = Color3.fromRGB(255, 255, 255)
+        }
+    }
+
+    local PlayerRoles = {
+        Exorcist = "E",
+        Possessor = "P",
+        Decoy = "D",
+        Medium = "M"
+    }
+
+    local GameSettings = {
+        ignoreFriends = Settings.ignoreFriends,
+        HuntExploit = Settings.HuntExploit,
+        ExoExploit = Settings.ExoExploit,
+        AntiAFK = Settings.AntiAFK,
+        ESP = Settings.ESP
+    }
+
+    local PlayerManager = {}
+    PlayerManager.__index = PlayerManager
+
+    function PlayerManager.new()
+        local self = setmetatable({}, PlayerManager)
+        self.localRole = ""
+        self.currentState = ""
+        self.isHunting = false
+        return self
+    end
+
+    function PlayerManager:findPossessor()
+        local players = game.Players:GetPlayers()
+        for _, player in ipairs(players) do
+            if player:GetAttribute("IsPossessor") == true then
+                return player
+            end
+        end
+    end
+
+    function PlayerManager:checkExtraRole()
+        local extraRole = game.Players.LocalPlayer:GetAttribute("ExtraRole")
+        if extraRole == PlayerRoles.Exorcist then
+            self.localRole = "Exorcist"
+        elseif extraRole == PlayerRoles.Medium then
+            self.localRole = "Medium"
+        elseif extraRole == PlayerRoles.Decoy then
+            self.localRole = "Decoy"
+        end
+    end
+
+    function PlayerManager:setupGUI()
+        local MainFolder = Tab:AddSection({
+            Name = "Main"
+        })
+
+        local PossessorFolder = Tab:AddSection({
+            Name = "Possessor"
+        })
+
+        local ExorcistFolder = Tab:AddSection({
+            Name = "Exorcist"
+        })
+
+        local DecoyFolder = Tab:AddSection({
+            Name = "Decoy"
+        })
+
+        local ESPFolder = ESPTab:AddSection({
+            Name = "ESP"
+        })
+
+        local AntiAfkToggle = MainFolder:AddToggle({
+            Name = "Anti-AFK",
+            Default = GameSettings.AntiAFK,
+            Callback = function(value)
+                GameSettings.AntiAFK = value
+            end
+        })
+
+        local HuntExploitToggle = PossessorFolder:AddToggle({
+            Name = "Kill-All (Must use Hunt)",
+            Default = GameSettings.HuntExploit,
+            Callback = function(value)
+                GameSettings.HuntExploit = value
+            end
+        })
+
+        local ExoExploitToggle = ExorcistFolder:AddToggle({
+            Name = "Auto-Exorcist",
+            Default = GameSettings.ExoExploit,
+            Callback = function(value)
+                GameSettings.ExoExploit = value
+            end
+        })
+
+        local ExoFriendToggle = ExorcistFolder:AddToggle({
+            Name = "Ignore Friends (Auto-Exorcist)",
+            Default = GameSettings.ignoreFriends,
+            Callback = function(value)
+                GameSettings.ignoreFriends = value
+            end
+        })
+
+        local ESPPossessorToggle = ESPFolder:AddToggle({
+            Name = "ESP Possessor",
+            Default = GameSettings.ESP.Possessor,
+            Callback = function(value)
+                GameSettings.ESP.Possessor = value
+            end
+        })
+
+        local ESPMediumToggle = ESPFolder:AddToggle({
+            Name = "ESP Medium",
+            Default = GameSettings.ESP.Medium,
+            Callback = function(value)
+                GameSettings.ESP.Medium = value
+            end
+        })
+
+        local ESPDecoyToggle = ESPFolder:AddToggle({
+            Name = "ESP Decoy",
+            Default = GameSettings.ESP.Decoy,
+            Callback = function(value)
+                GameSettings.ESP.Decoy = value
+            end
+        })
+    end
+
+    function CreateHighlight()
+        for i, plr in pairs(Players:GetChildren()) do
+            if plr ~= LocalPlayer and plr.Character and not plr.Character:FindFirstChild("Highlight") then
+                Instance.new("Highlight", plr.Character)           
+            end
+        end
+    end
+
+    function UpdateHighlights()
+        for _, plr in pairs(Players:GetChildren()) do
+            if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("Highlight") then
+                Highlight = plr.Character:FindFirstChild("Highlight")
+                Highlight.Enabled = true
+                if plr:GetAttribute("IsPossessor") and plr:GetAttribute("Alive") then
+                    -- Highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                    Highlight.Enabled = false
+                elseif plr:GetAttribute("ExtraRole") == "D" and plr:GetAttribute("Alive") and GameSettings.ESP.Decoy then
+                    Highlight.FillColor = Color3.fromRGB(255, 255, 0)
+                elseif plr:GetAttribute("ExtraRole") == "M" and plr:GetAttribute("Alive") and GameSettings.ESP.Medium then
+                    Highlight.FillColor = Color3.fromRGB(0, 0, 255) 
+                else
+                    Highlight.Enabled = false
+                end
+            end
+        end
+    end	
+
+
+    function PlayerManager:setupEventListeners()
+        game.ReplicatedStorage.Remotes.RoleCard.OnClientEvent:Connect(function(role)
+            self.localRole = role
+
+        end)
+
+        game.ReplicatedStorage.Remotes.State.Changed:Connect(function()
+            self.currentState = game.ReplicatedStorage.Remotes.State.Value
+            self:checkExtraRole()
+
+            if string.find(self.currentState, "Beginning") and GameSettings.AntiAFK then 
+                for i = 1, 5 do
+                    wait(5)
+                    game.ReplicatedStorage.Remotes.LobbyRemote:FireServer("Input")
+                end
+            end
+
+            if string.find(self.currentState, "Exorcist") and self.localRole == "Exorcist" and GameSettings.ExoExploit then
+                local possessor = self:findPossessor()
+                if possessor and (not GameSettings.ignoreFriends or not possessor:IsFriendsWith(LocalPlayer.UserId)) then
+                    game.ReplicatedStorage.Remotes.GameRemote:FireServer(possessor, true)
+                end
+            end
+
+            self.localRole = ""
+        end)
+
+        game.ReplicatedStorage.Remotes.HuntRemote.OnClientEvent:Connect(function(isHuntActive)
+            if isHuntActive then
+                self.isHunting = true
+
+                while self.isHunting and GameSettings.HuntExploit do
+                    for _, player in ipairs(game.Players:GetPlayers()) do
+                        if player ~= game.Players.LocalPlayer and player.Character and player:GetAttribute("Alive") then
+                            local humanoid = player.Character:FindFirstChild("Humanoid")
+                            if humanoid and humanoid.Health > 0 then
+                                game.ReplicatedStorage.Remotes.HuntRemote:FireServer(player.Character)
+                            end
+                        end
+                    end
+                    wait(1)
+                end
+            else
+                self.isHunting = false
+            end
+        end)
+    end
+
+    game:GetService("RunService").RenderStepped:connect(function()
+        CreateHighlight()
+        UpdateHighlights()
+    end)
+
+    local playerManager = PlayerManager.new()
+    playerManager:setupGUI()
+    playerManager:setupEventListeners()
+
