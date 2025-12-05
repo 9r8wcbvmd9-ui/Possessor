@@ -48,11 +48,6 @@ local MainTab = Window:CreateTab("🏠Home", nil) -- Title, Image
 local MainSection = MainTab:CreateSection("Main🧟")
 
 
-    local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
-    local PossessorESP = loadstring(game:HttpGet("https://paste.ee/r/lwGJs"))()
-    local LocalPlayer = game.Players.LocalPlayer
-    local Players = game:GetService("Players")
-
     local Window = OrionLib:MakeWindow({
         Name = "Possessor MultiHack",
         HidePremium = false,
